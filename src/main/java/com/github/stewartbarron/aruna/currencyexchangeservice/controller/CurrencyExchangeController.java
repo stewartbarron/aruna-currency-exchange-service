@@ -1,6 +1,7 @@
 package com.github.stewartbarron.aruna.currencyexchangeservice.controller;
 
 import com.github.stewartbarron.aruna.currencyexchangeservice.model.CurrencyExchange;
+import com.github.stewartbarron.aruna.currencyexchangeservice.repository.CurrencyExchangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.env.Environment;
@@ -14,12 +15,20 @@ import java.math.BigDecimal;
 public class CurrencyExchangeController {
 
     @Autowired
+    private CurrencyExchangeRepository currencyExchangeRepository;
+
+    @Autowired
     private Environment environment;
 
     @GetMapping("/currency-exchange/from/{from}/to/{to}")
     public CurrencyExchange getCurrencyExchange(@PathVariable String from, @PathVariable String to) {
         String port = environment.getProperty("local.server.port");
-        CurrencyExchange currencyExchange = new CurrencyExchange(1000L, from, to, BigDecimal.valueOf(50), port);
+        CurrencyExchange currencyExchange = currencyExchangeRepository.findByFromAndTo(from, to);
+
+        if (currencyExchange == null) {
+            throw new RuntimeException("Unable to find data for " + from + " to " + to);
+        }
+
         return currencyExchange;
     }
 }
