@@ -11,6 +11,9 @@ spring:
   h2:
     console:
       enabled: true
+  sleuth:
+    sampler:
+      probablity: 1
 
 server:
   port: 8000
